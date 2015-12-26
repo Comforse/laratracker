@@ -62,6 +62,6 @@ class PeerTorrent extends Model
 
     public static function getByPeerAndTorrent(Peer $peer, Torrent $torrent)
     {
-        return self::where('peer_id', '=', $peer->id)->where('torrent_id', '=', $torrent->id)->get();
+        return self::where('peer_id', '=', $peer->id)->where('torrent_id', '=', $torrent->id)->first();
     }
 }
