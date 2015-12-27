@@ -10,33 +10,21 @@
  * http://opensource.org/licenses/osl-3.0.php
  *
  * @project    Lara Tracker
- * @file       UserPasskeys.php
- * @created    12/18/2015 7:30 PM
+ * @file       AuthenticatesAndRegistersUsers.php
+ * @created    12/27/2015 1:25 AM
  * @copyright  Copyright (c) 2015 Comforse (comforse.github@gmail.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  * @author     Comforse
  */
 
-namespace App\Models;
+namespace App\CustomTraits;
 
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\RegistersUsers;
 
-class UserPasskeys extends  Model
+trait AuthenticatesAndRegistersUsers
 {
-
-    /**
-     * Associated db table
-     *
-     * @var string
-     */
-    protected $table = "user_passkeys";
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = ['user_id', 'passkey'];
-
+    use AuthenticatesUsers, RegistersUsers {
+        AuthenticatesUsers::redirectPath insteadof RegistersUsers;
+    }
 }

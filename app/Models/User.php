@@ -11,6 +11,9 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
+/**
+ * @property mixed password_hash
+ */
 class User extends Model implements AuthenticatableContract,
     AuthorizableContract,
     CanResetPasswordContract
@@ -57,7 +60,15 @@ class User extends Model implements AuthenticatableContract,
         // Account status
         $attributes['account_status'] = self::ACCOUNT_ACTIVE;
 
-        return parent::create($attributes);
+        $model = parent::create($attributes);
+
+        // Generate passkey
+        UserPasskeys::create([
+            'user_id' => $model->id,
+            'passkey' => md5(StringHelper::generateRandomString().time().$model->secret)
+        ]);
+
+        return $model;
     }
 
     public static function getByID($id)
@@ -109,5 +120,12 @@ class User extends Model implements AuthenticatableContract,
     public function peers()
     {
         return $this->hasManyThrough('App\Model\Peer', 'App\Models\PeerTorrent');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAuthPassword() {
+        return $this->password_hash;
     }
 }
