@@ -74,7 +74,7 @@ class AnnounceController extends Controller
         }
 
         // Find passkey-related user
-        $user = User::has('passkeys', '=', $passkey)->first();
+        $user = User::has('passkeys', '=', $passkey)->get();
         if ($user == null) {
             return BencodeHelper::bencodedResponseRaw("Invalid passkey", 401);
         }
