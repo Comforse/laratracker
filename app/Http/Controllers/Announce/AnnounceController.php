@@ -25,7 +25,6 @@ use App\Models\Peer;
 use App\Models\PeerTorrent;
 use App\Models\Torrent;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Input;
 
@@ -33,11 +32,10 @@ class AnnounceController extends Controller
 {
     /**
      * The announce action
-     *
-     * @param Request $request
      * @return $this
+     * @internal param Request $request
      */
-    public function announce(Request $request)
+    public function announce()
     {
         // GET params sent by the client
         $passkey = Input::get('passkey');
