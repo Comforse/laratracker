@@ -52,10 +52,10 @@
 <div class="wrapper">
 
     <!-- Header -->
-    @include('header')
+    @include('layouts.adminlte.header')
 
     <!-- Sidebar -->
-    @include('sidebar')
+    @include('layouts.adminlte.sidebar')
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
@@ -80,7 +80,7 @@
     </div><!-- /.content-wrapper -->
 
     <!-- Footer -->
-    @include('footer')
+    @include('layouts.adminlte.footer')
 
 </div><!-- ./wrapper -->
 
