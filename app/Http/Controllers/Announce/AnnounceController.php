@@ -21,12 +21,15 @@
 namespace App\Http\Controllers\Announce;
 
 use App\Helpers\BencodeHelper;
+
 use App\Models\Peer;
 use App\Models\PeerTorrent;
 use App\Models\Torrent;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
 
 class AnnounceController extends Controller
 {
@@ -35,13 +38,14 @@ class AnnounceController extends Controller
      * @return $this
      * @internal param Request $request
      */
-    public function announce()
+    public function announce(Request $request)
     {
+        Log::info($request->fullUrl());
         // GET params sent by the client
         $passkey = Input::get('passkey');
-        $peer_id = Input::get('peer_id');
+        $peer_id = base64_encode(Input::get('peer_id'));
         $info_hash = Input::get('info_hash');
-        $downloaded = Input::get('uploaded') ? intval(Input::get('uploaded')) : 0;
+        $downloaded = Input::get('downloaded') ? intval(Input::get('downloaded')) : 0;
         $uploaded = Input::get('uploaded') ? intval(Input::get('uploaded')) : 0;
         $left = Input::get('left') ? intval(Input::get('left')) : 0;
         $compact = Input::get('compact') ? intval(Input::get('compact')) : 0;
@@ -79,19 +83,26 @@ class AnnounceController extends Controller
             return BencodeHelper::bencodedResponseRaw("Invalid passkey", 401);
         }
 
+        // Check info_hash param
+        if (!$info_hash) {
+            return BencodeHelper::bencodedResponseRaw("Missing info hash", 401);
+        }
+
+        $info_hash = strtoupper(bin2hex($info_hash));
+
         // Check torrent hash
-        $torrent = Torrent::getByInfoHash(sha1($info_hash));
+        $torrent = Torrent::getByInfoHash($info_hash);
         if (!$torrent || $torrent == null) {
             return BencodeHelper::bencodedResponseRaw("Torrent not registered with this tracker.", 404);
         }
 
         // Check if peer already exists
-        $peer = Peer::getByHashAndPasskey(bin2hex($peer_id), $passkey);
+        $peer = Peer::getByHashAndPasskey($peer_id, $passkey);
 
         // Create a new one if it does not
         if ($peer == null) {
             $peer = Peer::create([
-                'hash' => bin2hex($peer_id),
+                'hash' => $peer_id,
                 'user_agent' => $_SERVER['HTTP_USER_AGENT'],
                 'ip_address' => $ipAddress,
                 'passkey' => $passkey,
@@ -100,7 +111,7 @@ class AnnounceController extends Controller
         }
 
         // Check info_hash (must be 20 chars long)
-        if (!$info_hash || strlen($info_hash) != 20) {
+        if (!$info_hash) {
             return BencodeHelper::bencodedResponseRaw("Invalid info hash.", 400);
         }
 

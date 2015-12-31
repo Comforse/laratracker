@@ -22,7 +22,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>{{ $page_title or "Page Title" }}</title>
+    <title>@yield('title')</title>
+    <meta name="description" content="@yield('description')">
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     <!-- Bootstrap 3.3.2 -->
     <link href="{{ asset("/bower_components/AdminLTE/bootstrap/css/bootstrap.min.css") }}" rel="stylesheet"
@@ -47,6 +48,7 @@
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
     <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
+    <link href="{{ asset("/bower_components/AdminLTE/dist/css/custom.css")}}" rel="stylesheet" type="text/css"/>
 </head>
 <body class="skin-blue">
 <div class="wrapper">
@@ -62,8 +64,8 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                {{ $page_title or "Page Title" }}
-                <small>{{ $page_description or null }}</small>
+                @yield('page_title')
+                <small>@yield('page_description')</small>
             </h1>
             <!-- You can dynamically generate breadcrumbs here -->
             <ol class="breadcrumb">
@@ -74,6 +76,13 @@
 
         <!-- Main content -->
         <section class="content">
+            @if ($errors->has())
+                <div class="alert alert-danger">
+                    @foreach ($errors->all() as $error)
+                        {{ $error }}
+                    @endforeach
+                </div>
+                @endif
             <!-- Your Page Content Here -->
             @yield('content')
         </section><!-- /.content -->

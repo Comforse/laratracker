@@ -6,19 +6,18 @@ use App\Helpers\StringHelper;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Rooles\Traits\UserRole;
 
 /**
  * @property mixed password_hash
  */
 class User extends Model implements AuthenticatableContract,
-    AuthorizableContract,
+    //AuthorizableContract,
     CanResetPasswordContract
 {
-    use Authenticatable, Authorizable, CanResetPassword;
+    use Authenticatable, CanResetPassword, UserRole;
 
     const ACCOUNT_BANNED = -1;
     const ACCOUNT_PENDING = 0;
@@ -111,7 +110,7 @@ class User extends Model implements AuthenticatableContract,
      */
     public function passkeys()
     {
-        return $this->hasMany('App\Models\UserPasskeys');
+        return $this->hasOne('App\Models\UserPasskeys');
     }
 
     /**

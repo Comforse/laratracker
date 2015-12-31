@@ -21,7 +21,10 @@ namespace App\Helpers;
 
 use App\Models\PeerTorrent;
 use App\Models\Torrent;
+use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Lang;
+use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
 
 class BencodeHelper
 {
@@ -29,6 +32,7 @@ class BencodeHelper
     const __TIMEOUT = 120;
     const __INTERVAL_MIN = 60;
     const __MAX_PPR = 20;
+    const _OK = 1;
 
     /**
      * Shortcut for bencoded response
@@ -136,7 +140,7 @@ class BencodeHelper
      * @param $d
      * @return string
      */
-    public static function bencodeDictionary($d)
+    public static function  bencodeDictionary($d)
     {
         $s = "d";
         $keys = array_keys($d);
@@ -227,5 +231,214 @@ class BencodeHelper
         }
 
         return $resp;
+    }
+
+    /**
+     * Array of wrror codes
+     *
+     * @param $code
+     * @param string $help
+     * @return string
+     */
+    public static function errorCode($code, $help = "")
+    {
+        $codes = array(
+            'wrong_dict_type'   => Lang::get('messages.bencode_wrong_type', ['help' => $help]),
+            'missing_info'      => Lang::get('messages.bencode_missing_dictionary_info', ['help' => $help]),
+            'invalid_info'      => Lang::get('messages.bencode_invalid_info', ['help' => $help]),
+            'invalid_data_type' => Lang::get('messages.bencode_invalid_data_type', ['help' => $help]),
+        );
+
+        if(array_key_exists($code, $codes)) {
+            return $codes[$code];
+        }
+
+        return "";
+    }
+
+    /**
+     * Decodes bencoded string
+     *
+     * @param $string
+     * @return array|void
+     */
+    public static function decode($string)
+    {
+        if (preg_match('/^(\d+):/', $string, $m)) {
+            $l = $m[1];
+            $pl = strlen($l) + 1;
+            $v = substr($string, $pl, $l);
+            $ss = substr($string, 0, $pl + $l);
+            if (strlen($v) != $l)
+                return "";
+            return array('type' => "string", 'value' => $v, 'strlen' => strlen($ss), 'string' => $ss);
+        }
+        if (preg_match('/^i(\d+)e/', $string, $m)) {
+            $v = $m[1];
+            $ss = "i" . $v . "e";
+            if ($v === "-0")
+                return "";
+            if ($v[0] == "0" && strlen($v) != 1)
+                return "";
+            return array('type' => "integer", 'value' => $v, 'strlen' => strlen($ss), 'string' => $ss);
+        }
+        switch ($string[0]) {
+            case "l":
+                return self::decodeList($string);
+                break;
+            case "d":
+                return self::decodeDictionary($string);
+                break;
+            default:
+                return "";
+        }
+    }
+
+    /**
+     * Decodes a torrent file
+     *
+     * @param $file
+     * @return array|void
+     */
+    public static function decodeFile($file)
+    {
+        return self::decode(file_get_contents($file));
+    }
+
+    /**
+     * Decodes a list
+     *
+     * @param $string
+     * @return array|string|void
+     * @internal param $s
+     */
+    public static function decodeList($string) {
+        if ($string[0] != "l")
+            return "";
+        $sl = strlen($string);
+        $i = 1;
+        $v = array();
+        $ss = "l";
+        for (;;) {
+            if ($i >= $sl)
+                return "";
+            if ($string[$i] == "e")
+                break;
+            $ret = self::decode(substr($string, $i));
+            if (!isset($ret) || !is_array($ret))
+                return "";
+            $v[] = $ret;
+            $i += $ret["strlen"];
+            $ss .= $ret["string"];
+        }
+        $ss .= "e";
+        return array('type' => "list", 'value' => $v, 'strlen' => strlen($ss), 'string' => $ss);
+    }
+
+    /**
+     * Decodes bencode dictionary
+     *
+     * @param $s
+     * @return array|string
+     */
+    public static function decodeDictionary($s) {
+        if ($s[0] != "d")
+            return "";
+        $sl = strlen($s);
+        $i = 1;
+        $v = array();
+        $ss = "d";
+        for (;;) {
+            if ($i >= $sl)
+                return "";
+            if ($s[$i] == "e")
+                break;
+            $ret = self::decode(substr($s, $i));
+            if (!isset($ret) || !is_array($ret) || $ret["type"] != "string")
+                return "";
+            $k = $ret["value"];
+            $i += $ret["strlen"];
+            $ss .= $ret["string"];
+            if ($i >= $sl)
+                return "";
+            $ret = self::decode(substr($s, $i));
+            if (!isset($ret) || !is_array($ret))
+                return "";
+            $v[$k] = $ret;
+            $i += $ret["strlen"];
+            $ss .= $ret["string"];
+        }
+        $ss .= "e";
+        return array('type' => "dictionary", 'value' => $v, 'strlen' => strlen($ss), 'string' => $ss);
+    }
+
+    /**
+     * Validates dictionary
+     *
+     * @param $dictionary
+     * @param $string
+     * @param string $type
+     * @return array|int|string
+     */
+    public static function checkDictionary($dictionary, $string, $type = "")
+    {
+        if ($dictionary["type"] != "dictionary") {
+            return self::errorCode('wrong_dict_type');
+        }
+        $a = explode(":", $string);
+        $dd = $dictionary["value"];
+        $ret = array();
+        foreach ($a as $k) {
+            unset($t);
+            if (preg_match('/^(.*)\((.*)\)$/', $k, $m)) {
+                $k = $m[1];
+                $t = $m[2];
+            }
+            if (!isset($dd[$k])) {
+                return self::errorCode('missing_info');
+            }
+            if (isset($t)) {
+                if ($dd[$k]["type"] != $t) {
+                    return self::errorCode('invalid_info');
+                }
+                $ret[] = $dd[$k]["value"];
+            } else
+                $ret[] = $dd[$k];
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Retrieves a value from the dictionary
+     *
+     * @param $dictionary
+     * @param $key
+     * @param $type
+     * @return string|void
+     */
+    public static function getDictionaryValue($dictionary, $key, $type)
+    {
+        if ($dictionary["type"] != "dictionary") {
+            throw new MissingMandatoryParametersException(self::errorCode('missing_data', $type));
+        }
+        $dd = $dictionary["value"];
+        if (!isset($dd[$key]))
+            return "";
+        $v = $dd[$key];
+        if ($v["type"] != $type) {
+            throw new InvalidArgumentException(self::errorCode('invalid_data_type', sprintf("%s | %s", $v["type"], $type)));
+        }
+
+        return $v["value"];
+    }
+
+    public static function getFileListAsString($arr)
+    {
+        $new = array();
+        foreach($arr as $v) {
+            $new[] = $v[0] . "{:::}" . $v[1];
+        }
+        return join(":::",$new);
     }
 }

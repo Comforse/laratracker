@@ -20,11 +20,15 @@
 namespace App\Models;
 
 
+use App\Helpers\BencodeHelper;
+use App\Helpers\StringHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 
 /**
  * @property mixed peers
+ * @property mixed files_list
+ * @property mixed hash
  */
 class Torrent extends Model
 {
@@ -36,13 +40,21 @@ class Torrent extends Model
     protected $table = 'torrent';
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = ['name', 'string_id', 'description', 'filename', 'category_id', 'info_hash', "picture", 'hash', 'size', 'files_list', 'user_id'];
+
+
+    /**
      * Uploader
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function uploader()
+    public function user()
     {
-        return $this->hasOne('App\Models\User');
+        return $this->belongsTo('App\Models\User');
     }
 
     /**
@@ -52,7 +64,7 @@ class Torrent extends Model
      */
     public function category()
     {
-        return $this->hasOne('App\Models\Category');
+        return $this->belongsTo('App\Models\Category');
     }
 
     /**
@@ -68,6 +80,11 @@ class Torrent extends Model
     public static function getByInfoHash($info_hash)
     {
         return self::where('info_hash', '=', $info_hash)->first();
+    }
+
+    public static function getByStringID($string_id)
+    {
+        return self::where('string_id', '=', $string_id)->first();
     }
 
     /**
@@ -90,6 +107,15 @@ class Torrent extends Model
         return $this->peers()->where('left', '>', 0)->where('stopped', false)->count();
     }
 
+    /**
+     * Returns an array of peers:
+     * array(
+     *  array(ip, port, peer_id)
+     * ...
+     * )
+     *
+     * @return array
+     */
     public function getPeersArray()
     {
         $pt = $this->peers();
@@ -98,8 +124,50 @@ class Torrent extends Model
         foreach($pt->getResults() AS $peer) {
             $p = $peer->peerInstance()->getResults();
             $ip = $p->ip_address;
-            $peers_array[] = array('ip' => $ip, 'port' => $p->port, 'peer_id' => hex2bin($p->hash));
+            $peers_array[] = array('ip' => $ip, 'port' => $p->port, 'peer_id' => (base64_decode($p->hash)));
         }
         return $peers_array;
+    }
+
+    /**
+     * Handles model creation in DB
+     *
+     * @param array $attributes
+     * @return static
+     */
+    public static function create(array $attributes = [])
+    {
+        // Add a random string as a key for extra security
+        if(!array_key_exists('string_id', $attributes) || $attributes['string_id'] == '') {
+            $attributes['string_id'] = StringHelper::generateRandomString(5);
+        }
+
+        return parent::create($attributes);
+    }
+
+    public function getFileListArray()
+    {
+
+    }
+
+    /**
+     * Returns the path to the server torrent file
+     *
+     * @return string
+     */
+    public function getFilePath()
+    {
+        $config = config('settings');
+        return $config['torrents_upload_dir'].$this->hash.".torrent";
+    }
+
+    /**
+     * Returns the decoded dictionary of the torrent file
+     *
+     * @return array|void
+     */
+    public function getDictionary()
+    {
+        return BencodeHelper::decodeFile($this->getFilePath());
     }
 }

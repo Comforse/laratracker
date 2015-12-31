@@ -1,0 +1,54 @@
+/******** Torrents table ********/
+div.category {
+    background-image: url("/images/categories/cats.png");
+    height: 40px;
+    width: 60px;
+}
+
+.table-torrents thead th img {
+    width: 12px;
+    height: 12px;
+    background: url("/images/icons/ttableicons.gif") no-repeat;
+}
+
+td.category_col {
+    height: 40px;
+    width: 60px;
+}
+
+td.small {
+    width: 12px;
+}
+
+td.smallx2 {
+    width: 24px;
+}
+
+td.medium {
+    width: 80px;
+}
+
+img#icon_download {
+    background-position: -40px 0;
+}
+
+img#icon_comments {
+    background-position: -78px 0;
+}
+
+img#icon_size {
+    background-position: -26px 0;
+}
+
+img#icon_seeders {
+    background-position: -13px 0;
+}
+
+img#icon_leechers {
+    background-position: 0 0;
+}
+
+.text-center {
+    text-align: center !important;
+    vertical-align: middle;
+}

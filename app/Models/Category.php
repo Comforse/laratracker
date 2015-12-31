@@ -21,6 +21,7 @@ namespace App\Models;
 
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Category extends Model
 {
@@ -35,5 +36,15 @@ class Category extends Model
     protected function torrents()
     {
         return $this->hasMany('App\Models\Torrent');
+    }
+
+    /**
+     * Returns an array('id' => 'name')
+     *
+     * @return mixed
+     */
+    public static function getAllKeyValueAsArray()
+    {
+        return DB::table('categories')->select('id', 'name')->orderBy('name', 'ASC')->lists('name','id');
     }
 }
