@@ -139,6 +139,7 @@ return [
         Illuminate\Html\HtmlServiceProvider::class,
         Rooles\RoolesServiceProvider::class,
         Illuminate\Html\HtmlServiceProvider::class,
+        
         /*
          * Application Service Providers...
          */
