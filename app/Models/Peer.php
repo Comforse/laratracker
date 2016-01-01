@@ -43,4 +43,9 @@ class Peer extends Model
     {
         return self::where('hash', '=', $hash)->where('passkey', '=', $passkey)->first();
     }
+
+    public static function getByIPAndPasskey($ip, $passkey)
+    {
+        return self::where('ip_address', '=', $ip)->where('passkey', '=', $passkey)->first();
+    }
 }

@@ -97,7 +97,7 @@ class AnnounceController extends Controller
         }
 
         // Check if peer already exists
-        $peer = Peer::getByHashAndPasskey($peer_id, $passkey);
+        $peer = Peer::getByIPAndPasskey($ipAddress, $passkey);
 
         // Create a new one if it does not
         if ($peer == null) {
