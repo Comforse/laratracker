@@ -50,7 +50,7 @@
     <![endif]-->
     <link href="{{ asset("/bower_components/AdminLTE/dist/css/custom.css")}}" rel="stylesheet" type="text/css"/>
 </head>
-<body class="skin-blue">
+<body class="hold-transition skin-blue layout-boxed sidebar-mini">
 <div class="wrapper">
 
     <!-- Header -->

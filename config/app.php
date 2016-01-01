@@ -2,6 +2,7 @@
 
 return [
 
+    'env' => env('APP_ENV', 'development'),
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode
