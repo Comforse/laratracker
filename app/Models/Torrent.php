@@ -29,6 +29,8 @@ use Illuminate\Support\Facades\Log;
  * @property mixed peers
  * @property mixed files_list
  * @property mixed hash
+ * @property mixed seeders
+ * @property int leechers
  */
 class Torrent extends Model
 {
@@ -169,5 +171,46 @@ class Torrent extends Model
     public function getDictionary()
     {
         return BencodeHelper::decodeFile($this->getFilePath());
+    }
+
+    /**
+     * Updates seeders field and returns the object
+     *
+     * @return $this
+     */
+    public function updateSeeders()
+    {
+        $this->seeders = count(PeerTorrent::getSeeders($this));
+        $this->save();
+        return $this;
+    }
+
+    /**
+     * Updates leechers field and returns the object
+     *
+     * @return $this
+     */
+    public function updateLeechers()
+    {
+        $this->leechers = count(PeerTorrent::getLeechers($this));
+        $this->save();
+        return $this;
+    }
+
+    /**
+     * Actions to be performed when an announce occurs
+     *
+     * @return $this
+     */
+    public function announce()
+    {
+        // Yodate Seeders field
+        $this->updateSeeders();
+
+        // Update leechers field
+        $this->updateLeechers();
+
+        // return current object
+        return $this;
     }
 }

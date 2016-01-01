@@ -71,4 +71,30 @@ class PeerTorrent extends Model
     {
         return self::where('peer_id', '=', $peer->id)->where('torrent_id', '=', $torrent->id)->first();
     }
+
+    /**
+     * Array of seeders for a specific Torrent object
+     *
+     * @param Torrent $torrent
+     * @return mixed
+     */
+    public static function getSeeders(Torrent $torrent)
+    {
+        return self::where('torrent_id', '=', $torrent->id)
+                    ->where('left', '=', 0)
+                    ->where('stopped', '=', false)->get();
+    }
+
+    /**
+     * Array of leechers
+     *
+     * @param Torrent $torrent
+     * @return mixed
+     */
+    public static function getLeechers(Torrent $torrent)
+    {
+        return self::where('torrent_id', '=', $torrent->id)
+            ->where('left', '>', 0)
+            ->where('stopped', '=', false)->get();
+    }
 }

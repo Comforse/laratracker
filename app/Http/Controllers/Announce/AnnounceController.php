@@ -22,6 +22,7 @@ namespace App\Http\Controllers\Announce;
 
 use App\Helpers\BencodeHelper;
 
+use App\Helpers\BitTorrent;
 use App\Models\Peer;
 use App\Models\PeerTorrent;
 use App\Models\Torrent;
@@ -50,7 +51,7 @@ class AnnounceController extends Controller
         $left = Input::get('left') ? intval(Input::get('left')) : 0;
         $compact = Input::get('compact') ? intval(Input::get('compact')) : 0;
         $no_peer_id = Input::get('no_peer_id') ? intval(Input::get('no_peer_id')) : 0;
-
+        $event = strip_tags(Input::get('event'));
         // Client IP address
         $ipAddress = '';
         // Check for X-Forwarded-For headers and use those if found
@@ -101,13 +102,14 @@ class AnnounceController extends Controller
 
         // Create a new one if it does not
         if ($peer == null) {
-            $peer = Peer::create([
+            $attributes = [
                 'hash' => $peer_id,
                 'user_agent' => $_SERVER['HTTP_USER_AGENT'],
                 'ip_address' => $ipAddress,
                 'passkey' => $passkey,
                 'port' => $port
-            ]);
+            ];
+            $peer = Peer::create($attributes);
         }
 
         // Check info_hash (must be 20 chars long)
@@ -120,14 +122,22 @@ class AnnounceController extends Controller
 
         // Assign it, if not
         if ($peer_torrent == null) {
-            PeerTorrent::create([
+            $attributes = [
                 'peer_id' => $peer->id,
                 'torrent_id' => $torrent->id,
                 'uploaded' => $uploaded,
                 'downloaded' => $downloaded,
-                'left' => $left,
-                'stopped' => false
-            ]);
+                'left' => $left
+            ];
+
+            // Event handling
+            if($event === BitTorrent::EVENT_STARTED || $event == BitTorrent::EVENT_COMPLETED) {
+                $attributes['stopped'] = false;
+            } else {
+                $attributes['stopped'] = true;
+            }
+
+            PeerTorrent::create($attributes);
 
         } else {
             // Or update the existing one
@@ -136,6 +146,9 @@ class AnnounceController extends Controller
             $peer_torrent->left = $left;
             $peer_torrent->save();
         }
+
+        // Perform announce on the torrent
+        $torrent->announce();
 
         // Build response
         $resp = BencodeHelper::buildAnnounceResponse($torrent, $peer_torrent, $compact, $no_peer_id);
