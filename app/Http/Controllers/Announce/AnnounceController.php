@@ -65,27 +65,27 @@ class AnnounceController extends Controller
         // Check client ports
         $port = $_SERVER['REMOTE_PORT'];
         if(!$port || !ctype_digit($port) || intval($port) < 1 || intval($port) > 65535) {
-            return BencodeHelper::bencodedResponseRaw("Invalid client port", 400);
+            return BencodeHelper::bencodedResponseRaw("Invalid client port", 103);
         }
 
         if ($port == 999 && substr($peer_id, 0, 10) == '-TO0001-XX') {
-            return BencodeHelper::bencodedResponseRaw("d8:completei0e10:incompletei0e8:intervali600e12:min intervali60e5:peersld2:ip12:72.14.194.184:port3:999ed2:ip11:72.14.194.14:port3:999ed2:ip12:72.14.194.654:port3:999eee", 400);
+            return BencodeHelper::bencodedResponseRaw("d8:completei0e10:incompletei0e8:intervali600e12:min intervali60e5:peersld2:ip12:72.14.194.184:port3:999ed2:ip11:72.14.194.14:port3:999ed2:ip12:72.14.194.654:port3:999eee", 103);
         }
 
         // Check passkey param
         if (!$passkey) {
-            return BencodeHelper::bencodedResponseRaw("Missing passkey", 401);
+            return BencodeHelper::bencodedResponseRaw("Missing passkey", 900);
         }
 
         // Find passkey-related user
         $user = User::has('passkeys', '=', $passkey)->get();
         if ($user == null) {
-            return BencodeHelper::bencodedResponseRaw("Invalid passkey", 401);
+            return BencodeHelper::bencodedResponseRaw("Invalid passkey", 900);
         }
 
         // Check info_hash param
         if (!$info_hash) {
-            return BencodeHelper::bencodedResponseRaw("Missing info hash", 401);
+            return BencodeHelper::bencodedResponseRaw("Missing info hash", 101);
         }
 
         $info_hash = strtoupper(bin2hex($info_hash));
@@ -93,7 +93,7 @@ class AnnounceController extends Controller
         // Check torrent hash
         $torrent = Torrent::getByInfoHash($info_hash);
         if (!$torrent || $torrent == null) {
-            return BencodeHelper::bencodedResponseRaw("Torrent not registered with this tracker.", 404);
+            return BencodeHelper::bencodedResponseRaw("Torrent not registered with this tracker.", 900);
         }
 
         // Check if peer already exists
@@ -112,7 +112,7 @@ class AnnounceController extends Controller
 
         // Check info_hash (must be 20 chars long)
         if (!$info_hash) {
-            return BencodeHelper::bencodedResponseRaw("Invalid info hash.", 400);
+            return BencodeHelper::bencodedResponseRaw("Invalid info hash.", 150);
         }
 
         // Check if peer is already assigned to torrent

@@ -60,6 +60,13 @@ class PeerTorrent extends Model
         return $this->hasMany('App\Models\Torrent');
     }
 
+    /**
+     * Retrieves a PeerTorrent by its' relations
+     *
+     * @param Peer $peer
+     * @param Torrent $torrent
+     * @return mixed
+     */
     public static function getByPeerAndTorrent(Peer $peer, Torrent $torrent)
     {
         return self::where('peer_id', '=', $peer->id)->where('torrent_id', '=', $torrent->id)->first();

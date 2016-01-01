@@ -208,6 +208,7 @@ class BencodeHelper
                 $peer_ip = explode('.', $row["ip"]);
                 $peer_ip = pack("C*", $peer_ip[0], $peer_ip[1], $peer_ip[2], $peer_ip[3]);
                 $peer_port = pack("n*", (int)$row["port"]);
+
                 $time = intval((time() % 7680) / 60);
 
                 if ($peerTorrent->left == 0) {

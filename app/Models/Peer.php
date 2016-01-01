@@ -44,6 +44,13 @@ class Peer extends Model
         return self::where('hash', '=', $hash)->where('passkey', '=', $passkey)->first();
     }
 
+    /**
+     * Retrieves a peer by IP address and Passkey
+     *
+     * @param $ip
+     * @param $passkey
+     * @return mixed
+     */
     public static function getByIPAndPasskey($ip, $passkey)
     {
         return self::where('ip_address', '=', $ip)->where('passkey', '=', $passkey)->first();
