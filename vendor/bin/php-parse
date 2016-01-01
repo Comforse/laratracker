@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+SRC_DIR="`pwd`"
+cd "`dirname "$0"`"
+cd "../nikic/php-parser/bin"
+BIN_TARGET="`pwd`/php-parse"
+cd "$SRC_DIR"
+"$BIN_TARGET" "$@"

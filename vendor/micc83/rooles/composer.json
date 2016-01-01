@@ -1,0 +1,41 @@
+{
+    "name": "micc83/rooles",
+    "description": "A very simple roles and permissions manager for Laravel 5",
+    "keywords": [
+        "laravel",
+        "RBAC",
+        "ACL",
+        "Roles",
+        "Permissions"
+    ],
+    "license": "MIT",
+    "homepage": "https://github.com/micc83/rooles",
+    "support": {
+        "issues": "https://github.com/micc83/rooles/issues",
+        "source": "https://github.com/micc83/rooles"
+    },
+    "authors": [
+        {
+            "name": "Alessandro Benoit",
+            "email": "micc83@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Rooles\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/"
+        ]
+    },
+    "require": {
+        "php": ">=5.5.9"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.8",
+        "laravel/laravel": "~5.1"
+    },
+    "minimum-stability": "dev"
+}
