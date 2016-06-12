@@ -38,4 +38,12 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('auth/register', 'Auth\AuthController@postRegister');
 
     Route::get('/announce', 'Announce\AnnounceController@announce');
+
+    // Administration
+    Route::get('/admin', 'Admin\AdminController@index');
+
+    // Administration - Categories
+    Route::get('/admin/categories', 'Admin\CategoriesController@index');
+    Route::get('/admin/categories/create', 'Admin\CategoriesController@create');
+    Route::post('/admin/categories/create', 'Admin\CategoriesController@createPost');
 });

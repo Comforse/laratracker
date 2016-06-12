@@ -18,6 +18,9 @@
  */
 
 return [
+    // General
+    'table_column_tools' => 'Tools',
+
     // Torrent-related
     'torrents_list' => 'Torrents',
     'torrents_upload' => 'Upload',
@@ -40,4 +43,18 @@ return [
     'torrentFile' => 'Invalid torrent file :help',
     'torrent_picture' => 'Cover picture',
     'torrent_download_t' => 'Download .torrent',
+
+    // Administration
+    'admin_index_title' => 'Administration Panel',
+    'admin_index_add_category' => 'Add Category',
+    'admin_index_categories_title' => 'Categories',
+    'admin_index_view_categories' => 'View Categories',
+    'admin_categories_create_title' => 'Add a new category',
+    'admin_categories_create_name' => 'Name',
+    'admin_categories_create_description' => 'Description',
+    'admin_categories_create_css' => 'Stylesheet class',
+    'admin_categories_index_column_name' => 'Name',
+    'admin_categories_index_column_icon' => 'Icon',
+    'admin_categories_index_header' => 'Categories List',
+    'admin_categories_index_title' => 'Manage Categories',
 ];

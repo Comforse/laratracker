@@ -24,13 +24,6 @@ class User extends Model implements AuthenticatableContract,
     const ACCOUNT_ACTIVE = 1;
 
     /**
-     * The database table used by the model.
-     *
-     * @var string
-     */
-    protected $table = 'user';
-
-    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -43,6 +36,10 @@ class User extends Model implements AuthenticatableContract,
      * @var array
      */
     protected $hidden = ['password_hash', 'secret'];
+
+    protected $dates = ['last_login', 'last_seen'];
+
+    protected $table = 'user';
 
     /**
      * @param array $attributes
@@ -62,7 +59,7 @@ class User extends Model implements AuthenticatableContract,
         $model = parent::create($attributes);
 
         // Generate passkey
-        UserPasskeys::create([
+        UserPasskey::create([
             'user_id' => $model->id,
             'passkey' => md5(StringHelper::generateRandomString().time().$model->secret)
         ]);
@@ -110,7 +107,7 @@ class User extends Model implements AuthenticatableContract,
      */
     public function passkeys()
     {
-        return $this->hasOne('App\Models\UserPasskeys');
+        return $this->hasOne('App\Models\UserPasskey');
     }
 
     /**

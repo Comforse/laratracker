@@ -31,14 +31,7 @@ class Peer extends Model
      */
     protected $fillable = ['hash', 'user_agent', 'ip_address', 'passkey', 'created_at', 'updated_at', 'port'];
 
-
-    /**
-     * Related table
-     *
-     * @var string
-     */
-    protected $table = 'peer';
-
+    
     public static function getByHashAndPasskey($hash, $passkey)
     {
         return self::where('hash', '=', $hash)->where('passkey', '=', $passkey)->first();

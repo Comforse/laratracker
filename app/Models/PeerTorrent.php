@@ -26,13 +26,6 @@ class PeerTorrent extends Model
 {
 
     /**
-     * Related table
-     *
-     * @var string
-     */
-    protected $table = 'peer_torrent';
-
-    /**
      * The attributes that are mass assignable.
      *
      * @var array

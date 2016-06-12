@@ -22,7 +22,7 @@ class RoleTest extends BaseCase
      */
     public function it_allows_to_assign_role_name()
     {
-        $customer = new Role('admin', new Permissions);
+        $customer = new Role('Admin', new Permissions);
 
         $customer->assignName('Administrator');
 
@@ -35,9 +35,9 @@ class RoleTest extends BaseCase
      */
     public function if_empty_name_is_provided_id_will_be_returned_instead()
     {
-        $customer = new Role('admin', new Permissions);
+        $customer = new Role('Admin', new Permissions);
         $customer->assignName('');
-        $this->assertEquals('admin', $customer);
+        $this->assertEquals('Admin', $customer);
     }
 
     /**
@@ -50,7 +50,7 @@ class RoleTest extends BaseCase
         $this->assertTrue($customer->is('customer'));
         $this->assertTrue($customer->isIn(['customer', 'users']));
         $this->assertEquals('customer', $customer->name());
-        $this->assertFalse($customer->is('admin'));
+        $this->assertFalse($customer->is('Admin'));
     }
 
     /**

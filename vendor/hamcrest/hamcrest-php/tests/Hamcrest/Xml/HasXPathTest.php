@@ -15,7 +15,7 @@ class HasXPathTest extends \Hamcrest\AbstractMatcherTest
     <user>
         <id>alice</id>
         <name>Alice Frankel</name>
-        <role>admin</role>
+        <role>Admin</role>
     </user>
     <user>
         <id>bob</id>
@@ -107,7 +107,7 @@ HTML;
         assertThat(
             'one match',
             self::$doc,
-            not(hasXPath('count(user[role = "admin"])', 2))
+            not(hasXPath('count(user[role = "Admin"])', 2))
         );
     }
 

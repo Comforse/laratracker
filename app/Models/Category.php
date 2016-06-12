@@ -25,10 +25,13 @@ use Illuminate\Support\Facades\DB;
 
 class Category extends Model
 {
-    /**
-     * @var string
-     */
-    protected $table = "categories";
+    protected $table = 'category';
+
+    protected $fillable = [
+        'name',
+        'description',
+        'css_class'
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -45,6 +48,6 @@ class Category extends Model
      */
     public static function getAllKeyValueAsArray()
     {
-        return DB::table('categories')->select('id', 'name')->orderBy('name', 'ASC')->lists('name','id');
+        return DB::table('category')->select('id', 'name')->orderBy('name', 'ASC')->lists('name','id');
     }
 }

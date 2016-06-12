@@ -32,7 +32,7 @@ class RoolesServiceProviderTest extends BaseCase
     public function it_register_roles_specified_in_config_file()
     {
         Config::set('rooles.roles', [
-            'admin' => [
+            'Admin' => [
                 'name'  => 'Administrator',
                 'grant' => [
                     '*'
@@ -43,7 +43,7 @@ class RoolesServiceProviderTest extends BaseCase
             ]
         ]);
 
-        $admin = $this->roleManager()->getOrCreate('admin');
+        $admin = $this->roleManager()->getOrCreate('Admin');
 
         $this->assertTrue($admin->can('users.add'));
         $this->assertFalse($admin->can('admins.delete'));

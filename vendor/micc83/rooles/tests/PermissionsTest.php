@@ -113,7 +113,7 @@ class PermissionsTest extends BaseCase
     {
         $this->perms->set('users.*.read', '*');
 
-        $this->assertTrue($this->perms->evaluate('users.admin.read'));
+        $this->assertTrue($this->perms->evaluate('users.Admin.read'));
         $this->assertTrue($this->perms->evaluate('users.customer.read'));
         $this->assertTrue($this->perms->evaluate('users.*.read.*'));
 

@@ -30,7 +30,7 @@ class PermsMiddlewareTest extends BaseCase
 
         $roleRepo = $this->app->make(Rooles\Contracts\RoleRepository::class);
 
-        $roleRepo->create('admin')->grant([
+        $roleRepo->create('Admin')->grant([
             'users.read',
             'users.write'
         ]);
@@ -83,7 +83,7 @@ class PermsMiddlewareTest extends BaseCase
 
         $this->be(new UserMock([
             'name' => 'Master',
-            'role' => 'admin'
+            'role' => 'Admin'
         ]));
 
         $this->get('veryRestricted')->see('Done!');

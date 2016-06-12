@@ -15,7 +15,7 @@ class RoleMiddlewareTest extends BaseCase
         parent::setUp();
 
         get('restricted', [
-            'middleware' => 'role:admin|root',
+            'middleware' => 'role:Admin|root',
             function () {
                 return 'Hello World';
             }
@@ -23,7 +23,7 @@ class RoleMiddlewareTest extends BaseCase
 
         $roleRepo = $this->app->make(Rooles\Contracts\RoleRepository::class);
 
-        $roleRepo->create('admin');
+        $roleRepo->create('Admin');
         $roleRepo->create('root');
         $roleRepo->create('operator');
 
@@ -64,7 +64,7 @@ class RoleMiddlewareTest extends BaseCase
 
         $this->be(new UserMock([
             'name' => 'Jhonny Mnemonic',
-            'role' => 'admin'
+            'role' => 'Admin'
         ]));
 
         $this->get('restricted')->see('Hello World');

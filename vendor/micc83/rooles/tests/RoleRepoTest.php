@@ -49,9 +49,9 @@ class RoleRepoTest extends BaseCase
     public function it_allows_to_get_existing_role_or_create_a_new_one()
     {
 
-        $this->roleRepo->getOrCreate('admin')->grant('*');
+        $this->roleRepo->getOrCreate('Admin')->grant('*');
 
-        $this->assertTrue($this->roleRepo->getOrCreate('admin')->can('*'));
+        $this->assertTrue($this->roleRepo->getOrCreate('Admin')->can('*'));
 
     }
 

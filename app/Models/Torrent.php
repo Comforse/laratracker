@@ -34,13 +34,7 @@ use Illuminate\Support\Facades\Log;
  */
 class Torrent extends Model
 {
-    /**
-     * The associated table
-     *
-     * @var string
-     */
-    protected $table = 'torrent';
-
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -48,6 +42,10 @@ class Torrent extends Model
      */
     protected $fillable = ['name', 'string_id', 'description', 'filename', 'category_id', 'info_hash', "picture", 'hash', 'size', 'files_list', 'user_id'];
 
+    /**
+     * @var string
+     */
+    protected $table = 'torrent';
 
     /**
      * Uploader

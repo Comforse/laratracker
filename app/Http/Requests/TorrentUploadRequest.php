@@ -29,7 +29,7 @@ class TorrentUploadRequest extends Request
             'torrent_name'          => 'unique:torrent,name|max:80|regex:([a-zA-Z0-9\.\-]+)',
             'torrent_nfo'           => 'required|mimes:txt,nfo,application/octet-stream|max:5120',
             'torrent_description'   => 'required|min:20',
-            'torrent_category'      => 'required|exists:categories,id',
+            'torrent_category'      => 'required|exists:category,id',
             'torrent_picture'       => 'mimes:jpg,jpeg,gif,png,bmp|max:5120',
         ];
     }
